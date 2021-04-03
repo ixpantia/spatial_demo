@@ -1,0 +1,31 @@
+{
+  "pipeline": {
+    "name": "distances"
+  },
+  "description": "Toma shapes de cantones y calcula la distancia a la playa mas cercana de segmento censal",
+  "input": {
+    "cross": [
+        {
+            "pfs": {
+                "glob": "/shapes_segments/*",
+                "repo": "separate_shape"
+            }
+        },
+        {
+            "pfs": {
+                "glob": "/*",
+                "repo": "beaches"
+            }
+        }
+    ]
+  },
+  "transform": {
+    "image": "gcr.io/ixplaza/spatial_demo",
+    "cmd": [ "Rscript", "distances.R"],
+    "err_cmd": [ "true" ]
+  },
+  "enable_stats": true,
+  "parallelism_spec": { 
+    "constant": 4
+  }
+}

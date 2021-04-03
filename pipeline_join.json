@@ -1,0 +1,21 @@
+{
+  "pipeline": {
+    "name": "join_segments"
+  },
+  "description": "Toma los shapes de segmentos con las playas asociadas y los une en uno solo",
+  "input": {
+    "pfs": {
+      "repo": "distancias",
+      "glob": "/"
+    }
+  },
+  "transform": {
+    "image": "gcr.io/ixplaza/espacial",
+    "cmd": [ "Rscript", "join_segments.R"],
+    "err_cmd": [ "true" ]
+  },
+  "enable_stats": true,
+  "parallelism_spec": { 
+    "constant": 4
+  }
+}
