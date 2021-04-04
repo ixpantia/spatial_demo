@@ -6,8 +6,8 @@ library(stringr)
 library(lwgeom)
 library(sf)
 
-in_dir <- "/pfs/separate_shape/shapes_segments"
-playas_dir <- "/pfs/beaches/beaches.rds"
+in_dir <- "/pfs/separate_shape/shapes_segmentos"
+playas_dir <- "/pfs/beaches/playas.rds"
 out_dir <- "/pfs/out"
 
 playas <- readRDS(playas_dir) %>%

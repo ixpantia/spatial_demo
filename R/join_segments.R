@@ -3,7 +3,7 @@ library(purrr)
 library(dplyr)
 library(sf)
 
-in_dir <- "/pfs/distancias"
+in_dir <- "/pfs/distances"
 out_dir <- "/pfs/out"
 
 segmentos <- list.files(path = in_dir,

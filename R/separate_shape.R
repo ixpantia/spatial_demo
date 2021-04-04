@@ -7,7 +7,7 @@ library(purrr)
 library(stringr)
 library(stringi)
 
-in_dir <- "/pfs/shapes_sp/shapes"
+in_dir <- "/pfs/shapes/shapes"
 out_dir <- "/pfs/out"
 
 segmentos <- st_read(paste0(in_dir, "/Segmento Censal_CR.shp"), options = "ENCODING=latin1") %>% 
