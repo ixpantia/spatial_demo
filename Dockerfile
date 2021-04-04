@@ -27,9 +27,6 @@ RUN R -e "install.packages('sf')"
 RUN R -e "install.packages('lwgeom')"
 
 # Get all R scripts to the container
-COPY R/distances.R  distances.R
-COPY R/separate_shape.R  separate_shape.R
-COPY R/join_segments.R join_segmentes_beaches.R
-
-# Open port 80 for traffic
-EXPOSE 80
+COPY R/distances.R distances.R
+COPY R/separate_shape.R separate_shape.R
+COPY R/join_segments.R join_segments.R
