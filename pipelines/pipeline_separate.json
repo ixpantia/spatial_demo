@@ -2,15 +2,15 @@
   "pipeline": {
     "name": "separate_shape"
   },
-  "description": "Toma shape files de segmentos y los separa en pequeños archivos de cantones.",
+  "description": "Take a shapefile with segments and separate into files with cantons.",
   "input": {
     "pfs": {
-      "repo": "shapes_sp",
+      "repo": "shapes",
       "glob": "/*/"
     }
   },
   "transform": {
-    "image": "gcr.io/ixplaza/espacial",
+    "image": "gcr.io/ixplaza/spatial_demo:1",
     "cmd": [ "Rscript", "separate_shape.R"],
     "err_cmd": [ "true" ]
   },
