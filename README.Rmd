@@ -8,96 +8,104 @@ output: md_document
 
 **If you you have your containers ready in a container registry, go to step 2**
 
-1. Ponemos el service account de ixplaza en la carpeta `demo_espacial` de este repositorio y trabajamos desde esta misma carpeta todos los pasos, este service account vamos asumir que se llama `gcs_ixplaza_key.json`.
+These instructions are for Google Container Registry, which we just happened to use for the demo. It will vary slightly if you use other infrastructure like AWS, Oracle Cloud or IBM Bluemix.
 
-2. Una vez en la carpeta `pachyderm_hub`, nos autenticamos por medio de ese service account en google usando :
+1. Push your container to the `spatial_demo` directory in your container registry (you will need sufficient permissions to do so). 
 
-```
-gcloud auth activate-service-account --key-file=gcs_ixplaza_key.json
-```
-
-3. Hacemos el built del Dockerfile con:
+In our example it would look like this.
 
 ```
-docker build -t gcr.io/ixplaza/espacial .
+docker build -t gcr.io/ixplaza/spatial_demo .
+docker push gcr.io/ixplaza/spatial_demo
 ```
 
-4. Dejamos que docker se autentifique con google para que pueda acceder al container registry. Para ello hacemos:
+## Step 2 - Get a cluster on Pachyderm Hub
 
-```
-gcloud auth configure-docker
-```
+1. Go to [hub.pachyderm.com](https://hub.pachyderm.com) and create a cluster. If you want to run the demo for free, "Create a 4-hr Workspace". You can also setup your own cluster locally (for instance with [microk8s](https://microk8s.com) or setup your own cluster the cloud. 
 
-5. Hacemos el push al container registry de google con:
-
-```
-docker push gcr.io/ixplaza/espacial
-```
-
-# Ejecutar Pachyderm
-
-1. Vamos a Pachyderm Hub y creamos un cluster.
-
-2. Lo primero que tenemos que hacer es seguir las instrucciones en la terminal tal cual aparecen en la opción de `connect`. La opción `connect` se muestra en la siguiente imagen:
+2. The Pachyderm Hub interface will give you the instruccions under the `connect` option 
 
 ![](img/1.png)
 
-3. Una vez configurado, podemos usar `pachctl version` y validar que el cluster está funcionando con `pachd`.
+3. Validate your connection with `pachctl version`. You should get a response with a version number for `pachctl` and `pachd`. If this works you can now do `pachctl shell` a utility that gives you autocomplete. For readability we will assume you are in the shell (otherwise just prepend the command with `pachctl` in all calls below).
 
-4. Vamos a trabajar en la carpeta `pachyderm_hub` así que en la terminal nos dirigimos a esa carpeta.
+4. We will work in the `spatial_demo` directory and the folowing commands will assume that your are there.
 
-5. Creamos el repositorio de entrada donde van a estar los shapes. En este caso se va a llamar `shapes`. Lo hacemos con:
 
-```
-pachctl create repo shapes_sp
-```
+## Step 3 - Put files on the cluster
 
-Podemos verificar que se creó correctamente con `pachtl list repo`.
-
-6. Para traer los datos desde un bucket externo, en GCP para este caso, se necesita dar los permisos a ese bucket del service account que asigna automáticament Pachyderm. Si ejecutamos el siguiente comando nos dará un error, pero se muestra el service account al que debemos dar acceso en el bucket:
+4. We are going to create the data repository to put the shapefiles in. We will call it `shapes`.
 
 ```
-pachctl put file shapes_sp@master -r -f gs://pachyderm_demo/shapes/
+create repo shapes
 ```
 
-Los permisos que debemos dar, al menos en GCP, son `Storage Object Viewer`. Una vez que damos los permisos volvemos a ejecutar el comando para traer los datos al repositorio de entrada de Pachyderm.
+Validate that the repo is there running `pachtl list repo`.
 
-7. Para poder acceder a la imagen que está ahora en el container registry la forma más sencilla que encontramos es hacer público el container registry. Dado que solo tenemos imagenes para esta demo, decidimos hacerlo así por el momento. Una vez que está público entonces Pachyderm puede acceder a esa imagen sin ningún problema.
-
-8. Ponemos a trabajar el primer pipeline con:
+6. We have found it easiest to work in a team with data in a bucket (GCP for this demo). Note that when we try to copy from our demo-data bucket Pachyderm will state the name of the service-account that needs permissions 
 
 ```
-pachctl create pipeline -f pipeline_split.json
+put file shapes@master -r -f gs://pachyderm_demo/shapes/
 ```
 
-9. Para ver los logs de cada corrida podemos usar `pachctl logs --pipeline=separate_shape`, y además podemos ver el avance del trabajo usando `pachctl inspect job <job_id>` en donde el `<job_id>` podemos obtenerlo de `pachctl list job`.
+You will need to give this service account `Storage Object Viewer` permissions, and then repeat the command above.
 
-10. Una vez que termina, el archivo `playas.rds` se usará para cada uno de los segmentos, es decir se debe usar en cada datum. La forma de poder hacer esto es mandando el archivo `playas.rds` a un repositorio nuevo y hacer un `cross` en los repositorios de entrada (esto me permite usar más de un repositorio de entrada). Pachyderm combina cada unidad de un repositorio con los del otro de manera que en este caso se tendrá disponible las playas en cada datum de segmento. Para ello vamos a crear un nuevo repositorio llamado `playas` y llevamos aquí el archivo `playas.rds`
+## Step 4 - Launch a pipeline
+
+7. The key componente of the pipeline is the container image that runs the code we need. For this demo we made the container public - you will need to setup some additional permisions in a production environment. 
+
+8. Lets put hte first pipeline to work
 
 ```
-pachctl create repo playas
-pachctl get file separate_shape@master:/shapes_segmentos/playas/playas.rds -o playas.rds
-pachctl put file playas@master -f playas.rds
+create pipeline -f pipelines/pipeline_separate.json
+```
+
+9. We can see what is happening now on the Pachyderm Dashboard or on the command line with:
+
+```
+pachctl logs --pipeline=separate_shape
+pachctl inspect job <job_id>` # get `<job_id>` with `pachctl list job`.
+```
+
+10. Once the `separate_shape` pipeline has finished, we will use the `playas.rds` file for each of the segments. 
+
+```
+list file separate_shape@master:/shapes_segmentos
+```
+
+We then do a `cross` between input repositories so that we can use more than one. Pachyderm will combine each datum in one repo with all thos in another so that we will have all beaches available for each segment datum. We will create a new repo called `beaches` and bring the `playas.rds` file there.
+
+```
+create repo beaches
+get file separate_shape@master:/shapes_segmentos/playas/playas.rds -o playas.rds
+put file playas@master -f playas.rds
+```
+
+On your filesystem you can now remove the file we downloaded from the cluster
+
+```
 rm playas.rds
 ```
-10. Hecho esto poner a correr el siguiente pipeline. Lo hacemos con:
+
+10. We can now start the pipeline to calculate distances 
 
 ```
-pachctl create pipeline -f pipeline_distances.json
+create pipeline -f pipeline_distances.json
 ```
 
-Para ver el proceso podemos hacer `pachctl inspect job <id_job>` en donde se puede obtener el `<id_job>` haciendo `pachctl list job` y se copia el `ID` del job que queremos consultar.
+We can check how the execution of the pipeline went by taking a look on the dashboads or inspect the job. We get the job id with `list job` and then `inspect job <job_id>`. 
 
-11. Por último se debe correr el pipeline que une todos los archivos en uno solo. Esto lo hacemos con:
-
-```
-pachctl create pipeline -f pipeline_join.json
-```
-
-12. Cuando termina de ejecutarse el pipeline anterior, para sacar el archivo final del repositorio de salida `une_segmentos`, podemos hacer:
+11. And now we run the last pipeline that joins all the archives into one.
 
 ```
-pachctl get file une_segmentos@master:/segmentos_playas.rds -o <path_al_que_queremos_copiar_archivo/segmentos_playas.rds>
+create pipeline -f pipeline_join.json
 ```
 
-13. **IMPORTANTE:** Debemos quitar el acceso y permisos del service account que pusimos en el bucket `pachyderm_demo` en GCP, donde tragimos los datos inciales para el repositorio de entrada `logsdl`.
+12. When this is done, we can download the final file to our local machine. This is the output file of the pipeline that joins the segments.
+
+```
+get file une_segmentos@master:/segmentos_playas.rds -o <path_al_que_queremos_copiar_archivo/segmentos_playas.rds>
+```
+
+13. **NOTE:** We suggest your remove any access you may have given to the pachyderm hub services account to any buckets you have used.
+
