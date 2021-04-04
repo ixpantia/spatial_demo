@@ -104,8 +104,15 @@ create pipeline -f pipeline_join.json
 12. When this is done, we can download the final file to our local machine. This is the output file of the pipeline that joins the segments.
 
 ```
-get file une_segmentos@master:/segmentos_playas.rds -o <path_al_que_queremos_copiar_archivo/segmentos_playas.rds>
+get file join_segments@master:/segmentos_playas.rds -o <path_al_que_queremos_copiar_archivo/segmentos_playas.rds>
 ```
 
 13. **NOTE:** We suggest your remove any access you may have given to the pachyderm hub services account to any buckets you have used.
 
+## Some usefule steps
+
+What we really want to see is if any of the datums failed. We can ask for a list of datums
+
+```
+list datum <pipeline id>
+```
