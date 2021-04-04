@@ -1,13 +1,12 @@
 ---
-title: "Pasos para ejecutar demo en Pachyderm Hub"
-author: "Patrick Santamaría"
-date: "30/9/2020"
-output: html_document
+output: md_document
 ---
 
-# Llevar imagen a container registry 
+# Pachyderm Spatial Demo with R steps
 
-**Si ya la imagen está ahí no es necesario hacer todos estos pasos y podemos pasar al apartado de Ejecutar Pachyderm**
+## Step 1 - push your image to a container registry 
+
+**If you you have your containers ready in a container registry, go to step 2**
 
 1. Ponemos el service account de ixplaza en la carpeta `demo_espacial` de este repositorio y trabajamos desde esta misma carpeta todos los pasos, este service account vamos asumir que se llama `gcs_ixplaza_key.json`.
 
