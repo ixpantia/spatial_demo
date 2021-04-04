@@ -5,12 +5,12 @@
   "description": "Take the segment shapes with associated beaches and join into one object",
   "input": {
     "pfs": {
-      "repo": "distancias",
+      "repo": "distances",
       "glob": "/"
     }
   },
   "transform": {
-    "image": "gcr.io/ixplaza/espacial:1",
+    "image": "gcr.io/ixplaza/spatial_demo:4",
     "cmd": [ "Rscript", "join_segments.R"],
     "err_cmd": [ "true" ]
   },

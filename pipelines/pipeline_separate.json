@@ -10,7 +10,7 @@
     }
   },
   "transform": {
-    "image": "gcr.io/ixplaza/spatial_demo:1",
+    "image": "gcr.io/ixplaza/spatial_demo:3",
     "cmd": [ "Rscript", "separate_shape.R"],
     "err_cmd": [ "true" ]
   },
