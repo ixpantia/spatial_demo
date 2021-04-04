@@ -2,63 +2,57 @@ library(sf)
 library(tidyverse)
 library(leaflet)
 
-playas <- st_read("demo_espacial/datos/playas2014crtm05.shp", 
+beaches <- st_read("data/playas2014crtm05.shp", 
                   options = "ENCODING=latin1") %>% 
-  # pon el mismo sistema de coordenadas (WGS84)
   st_transform(crs = "+init=epsg:4326") %>%  
   select(-X_COORD, -Y_COORD)
 
-segmentos <- st_read("demo_espacial/datos/Segmento Censal_CR.shp",
+segments <- st_read("data/Segmento Censal_CR.shp",
                      options = "ENCODING=latin1") %>% 
-  # pon el mismo sistema de coordenadas (WGS84)
   st_transform(crs = "+init=epsg:4326") 
 
-# Mapa general -----------------------------------------------------------------
-
+# General map -----------------------------------------------------------------
 leaflet() %>%
   addTiles() %>%
   setView(lat = 10, lng = -84, zoom = 7) %>%
-  addCircleMarkers(data = playas,
+  addCircleMarkers(data = beaches,
                    popup = paste0("<strong> Playa: </strong>",
-                                  playas$NOMBRE_DE_),
+                                  beaches$NOMBRE_DE_),
                    opacity = 1,
                    radius = 0.5,
                    color = "#B306B6") %>%
-  addPolygons(data = segmentos,
+  addPolygons(data = segments,
               fillColor = "chartreuse",
-              popup = paste0("<strong> Provincia: </strong>", 
-                             segmentos$PROVINCIA,
-                             "<br><strong> Cantón: </strong>",
-                             segmentos$NCANTON,
-                             "<br><strong> Distrito: </strong>",
-                             segmentos$NDISTRITO,
-                             "<br><strong> ID Segmento: </strong>",
-                             segmentos$IDSEG),
+              popup = paste0("<strong> Province: </strong>", 
+                             segments$PROVINCIA,
+                             "<br><strong> Canton: </strong>",
+                             segments$NCANTON,
+                             "<br><strong> District: </strong>",
+                             segments$NDISTRITO,
+                             "<br><strong>Segment ID: </strong>",
+                             segments$IDSEG),
               color = "black",
               fillOpacity = 0.35,
               weight = 1,
               highlight = highlightOptions(weight = 2,
                                            color = "blue"))
 
-# Procedimiento 1 --------------------------------------------------------------
-
-acosta <- readRDS("demo_espacial/datos/shapes_segmentos/segmentos_acosta.rds")
-
-alfaro_ruiz <- readRDS("demo_espacial/datos/shapes_segmentos/segmentos_alfaro_ruiz.rds")
-
+# Procedure 1 --------------------------------------------------------------
+acosta <- readRDS("data/shapes_segmentos/segmentos_acosta.rds")
+alfaro_ruiz <- readRDS("data/shapes_segmentos/segmentos_alfaro_ruiz.rds")
 
 leaflet() %>%
   addTiles() %>%
   setView(lat = 10, lng = -84, zoom = 7) %>%
   addPolygons(data = acosta,
               fillColor = "chartreuse",
-              popup = paste0("<strong> Provincia: </strong>", 
+              popup = paste0("<strong> Province: </strong>", 
                              acosta$PROVINCIA,
-                             "<br><strong> Cantón: </strong>",
+                             "<br><strong> Canton: </strong>",
                              acosta$NCANTON,
-                             "<br><strong> Distrito: </strong>",
+                             "<br><strong> District: </strong>",
                              acosta$NDISTRITO,
-                             "<br><strong> ID Segmento: </strong>",
+                             "<br><strong> Segment ID: </strong>",
                              acosta$IDSEG),
               color = "black",
               fillOpacity = 0.35,
@@ -67,13 +61,13 @@ leaflet() %>%
                                            color = "blue")) %>%
   addPolygons(data = alfaro_ruiz,
               fillColor = "chartreuse",
-              popup = paste0("<strong> Provincia: </strong>", 
+              popup = paste0("<strong> Province: </strong>", 
                              alfaro_ruiz$PROVINCIA,
-                             "<br><strong> Cantón: </strong>",
+                             "<br><strong> Canton: </strong>",
                              alfaro_ruiz$NCANTON,
-                             "<br><strong> Distrito: </strong>",
+                             "<br><strong> District: </strong>",
                              alfaro_ruiz$NDISTRITO,
-                             "<br><strong> ID Segmento: </strong>",
+                             "<br><strong> Segment ID: </strong>",
                              alfaro_ruiz$IDSEG),
               color = "black",
               fillOpacity = 0.35,
@@ -81,85 +75,85 @@ leaflet() %>%
               highlight = highlightOptions(weight = 2,
                                            color = "blue"))
 
-# Procedimiento 2---------------------------------------------------------------
+# Procedure 2---------------------------------------------------------------
 
 leaflet() %>%
   addTiles() %>%
   setView(lat = 10, lng = -84, zoom = 7) %>%
   addPolygons(data = acosta,
               fillColor = "chartreuse",
-              popup = paste0("<strong> Provincia: </strong>", 
+              popup = paste0("<strong> Province: </strong>", 
                              acosta$PROVINCIA,
-                             "<br><strong> Cantón: </strong>",
+                             "<br><strong> Canton: </strong>",
                              acosta$NCANTON,
-                             "<br><strong> Distrito: </strong>",
+                             "<br><strong> District: </strong>",
                              acosta$NDISTRITO,
-                             "<br><strong> ID Segmento: </strong>",
+                             "<br><strong> Segment ID: </strong>",
                              acosta$IDSEG),
               color = "black",
               fillOpacity = 0.35,
               weight = 1,
               highlight = highlightOptions(weight = 2,
                                            color = "blue")) %>%
-  addCircleMarkers(data = playas,
+  addCircleMarkers(data = beaches,
                    popup = paste0("<strong> Playa: </strong>",
-                                  playas$NOMBRE_DE_),
+                                  beaches$NOMBRE_DE_),
                    opacity = 1,
                    radius = 0.5,
                    color = "#B306B6")
 
-# Procedimiento 3 --------------------------------------------------------------
+# Procedure 3 --------------------------------------------------------------
 
-segmentos <- segmentos %>% 
+segments <- segments %>% 
   mutate(NCANTON = as.factor(NCANTON))
 
-factpal <- colorFactor(rainbow(82), unique(segmentos$NCANTON), alpha = FALSE)
+factpal <- colorFactor(rainbow(82), unique(segments$NCANTON), alpha = FALSE)
 
 leaflet() %>%
   addTiles() %>%
   setView(lat = 10, lng = -84, zoom = 7) %>%
-  addPolygons(data = segmentos,
+  addPolygons(data = segments,
               fillColor = ~factpal(NCANTON),
-              popup = paste0("<strong> Provincia: </strong>", 
-                             segmentos$PROVINCIA,
-                             "<br><strong> Cantón: </strong>",
-                             segmentos$NCANTON,
-                             "<br><strong> Distrito: </strong>",
-                             segmentos$NDISTRITO,
-                             "<br><strong> ID Segmento: </strong>",
-                             segmentos$IDSEG),
+              popup = paste0("<strong> Province: </strong>", 
+                             segments$PROVINCIA,
+                             "<br><strong> Canton: </strong>",
+                             segments$NCANTON,
+                             "<br><strong> Districto: </strong>",
+                             segments$NDISTRITO,
+                             "<br><strong> Segment ID: </strong>",
+                             segments$IDSEG),
               color = "black",
               fillOpacity = 1,
               weight = 1,
               highlight = highlightOptions(weight = 2,
                                            color = "blue"))
 
-## Resultado -------------------------------------------------------------------
+## Result -------------------------------------------------------------------
 
-resultado <- readRDS("demo_espacial/datos/segmentos_playas.rds")
+result <- readRDS("data/segmentos_playas.rds")
 
-paleta <- pal <- colorNumeric(
-  palette = colorRampPalette(c('#70FB01', '#760506'))(length(resultado$distancia_m)),
-  domain = resultado$distancia_m)
+paleta <- colorNumeric( palette = colorRampPalette(c('#70FB01', '#760506'))
+                  (length(result$distancia_m)), domain = result$distancia_m)
 
 leaflet() %>%
   addTiles() %>%
   setView(lat = 10, lng = -84, zoom = 7) %>%
-  addPolygons(data = resultado,
-              color = ~paleta(resultado$distancia_m),
-              popup = paste0("<strong> Provincia: </strong>", 
-                             resultado$PROVINCIA,
-                             "<br><strong> Cantón: </strong>",
-                             resultado$NCANTON,
-                             "<br><strong> Distrito: </strong>",
-                             resultado$NDISTRITO,
-                             "<br><strong> ID Segmento: </strong>",
-                             resultado$IDSEG),
+  addPolygons(data = result,
+              color = ~paleta(result$distancia_m),
+              popup = paste0("<strong> Province: </strong>", 
+                             result$PROVINCIA,
+                             "<br><strong> Canton: </strong>",
+                             result$NCANTON,
+                             "<br><strong> District: </strong>",
+                             result$NDISTRITO,
+                             "<br><strong> Segment ID: </strong>",
+                             result$IDSEG),
               fillOpacity = 1,
               weight = 1,
               highlight = highlightOptions(weight = 2,
                                            color = "blue")) %>%
-  addLegend("bottomright", pal = paleta, values = resultado$distancia_m,
-            title = "Cercanía a playa",
+  addLegend("bottomright", pal = paleta, values = result$distancia_m,
+            title = "Vicinity to a beach",
             labFormat = labelFormat(suffix = "m"),
             opacity = 1)
+
