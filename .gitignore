@@ -6,9 +6,6 @@
 # Session Data files
 .RData
 
-# User-specific files
-.Ruserdata
-
 # Example code in package build process
 *-Ex.R
 
@@ -27,21 +24,28 @@ vignettes/*.pdf
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
+secrets/
 
 # knitr and R markdown default cache directories
-*_cache/
+/*_cache/
 /cache/
 
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
 
-# R Environment Variables
-.Renviron
+# Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
+rsconnect/
 
-# pkgdown site
-docs/
+# Data
+logsdl
+scripts/logsdl
+data
 
-# translation temp files
-po/*~
+#Archivos generados
+*.html
 
+pachyderm_hub/gcs_ixplaza_key.json
+demo_espacial/gcs_ixplaza_key.json
+demo_espacial/datos
+**/*.rds

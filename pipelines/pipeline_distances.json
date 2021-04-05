@@ -1,0 +1,31 @@
+{
+  "pipeline": {
+    "name": "distances"
+  },
+  "description": "Take canton shapes and calculated the distances to the nearest beach for each census segment",
+  "input": {
+    "cross": [
+        {
+            "pfs": {
+                "glob": "/shapes_segmentos/*",
+                "repo": "separate_shape"
+            }
+        },
+        {
+            "pfs": {
+                "glob": "/*",
+                "repo": "beaches"
+            }
+        }
+    ]
+  },
+  "transform": {
+    "image": "gcr.io/ixplaza/spatial_demo:3",
+    "cmd": [ "Rscript", "distances.R"],
+    "err_cmd": [ "true" ]
+  },
+  "enable_stats": true,
+  "parallelism_spec": { 
+    "constant": 4
+  }
+}
