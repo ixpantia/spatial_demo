@@ -81,8 +81,8 @@ permissions, and then repeat the command above.
 
 <!-- -->
 
-    pachctl logs --pipeline=separate_shape
-    pachctl inspect job <job_id>` # get `<job_id>` with `pachctl list job`.
+    logs --pipeline=separate_shape
+    inspect job <job_id>` # get `<job_id>` with `list job`.
 
 1.  Once the `separate_shape` pipeline has finished, we will use the
     `playas.rds` file for each of the segments.
@@ -99,7 +99,7 @@ datum. We will create a new repo called `beaches` and bring the
 
     create repo beaches
     get file separate_shape@master:/shapes_segmentos/playas/playas.rds -o playas.rds
-    put file playas@master -f playas.rds
+    put file beaches@master -f playas.rds
 
 On your file system you can now remove the file we downloaded from the
 cluster
@@ -129,7 +129,7 @@ then `inspect job <job_id>`.
 
 <!-- -->
 
-    get file join_segments@master:/segmentos_playas.rds -o <path_al_que_queremos_copiar_archivo/segmentos_playas.rds>
+    get file join_segments@master:/segmentos_playas.rds -o final_result.rds
 
 1.  **NOTE:** We suggest your remove any access you may have given to
     the pachyderm hub services account to any buckets you have used.
