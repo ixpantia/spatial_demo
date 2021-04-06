@@ -1,4 +1,4 @@
-# Pachyderm Spatial Demo with R steps
+# Pachyderm Spatial Demo with R
 
 ## Step 1 - push your image to a container registry
 
@@ -28,7 +28,7 @@ In our example it would look like this.
 2.  The Pachyderm Hub interface will give you the instructions under the
     `connect` option
 
-![](img/1.png)
+![](img/connect_pachhub.png)
 
 1.  Validate your connection with `pachctl version`. You should get a
     response with a version number for `pachctl` and `pachd`. If this
@@ -134,7 +134,7 @@ then `inspect job <job_id>`.
 1.  **NOTE:** We suggest your remove any access you may have given to
     the pachyderm hub services account to any buckets you have used.
 
-## What is something goes wrong
+## What if something goes wrong
 
 What if something goes wrong? Can we see is if any of the datums failed?
 Yes, we can ask for a list of datums and check their status. If you do
