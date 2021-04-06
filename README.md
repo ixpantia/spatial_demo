@@ -25,7 +25,7 @@ In our example it would look like this.
     instance with [microk8s](https://microk8s.com) or setup your own
     cluster the cloud.
 
-2.  The Pachyderm Hub interface will give you the instruccions under the
+2.  The Pachyderm Hub interface will give you the instructions under the
     `connect` option
 
 ![](img/1.png)
@@ -37,7 +37,7 @@ In our example it would look like this.
     (otherwise just prepend the command with `pachctl` in all calls
     below).
 
-2.  We will work in the `spatial_demo` directory and the folowing
+2.  We will work in the `spatial_demo` directory and the following
     commands will assume that your are there.
 
 ## Step 3 - Put files on the cluster
@@ -65,12 +65,12 @@ permissions, and then repeat the command above.
 
 ## Step 4 - Launch a pipeline
 
-1.  The key componente of the pipeline is the container image that runs
+1.  The key component of the pipeline is the container image that runs
     the code we need. For this demo we made the container public - you
-    will need to setup some additional permisions in a production
+    will need to setup some additional permissions in a production
     environment.
 
-2.  Lets put hte first pipeline to work
+2.  Lets put the first pipeline to work
 
 <!-- -->
 
@@ -92,8 +92,8 @@ permissions, and then repeat the command above.
     list file separate_shape@master:/shapes_segmentos
 
 We then do a `cross` between input repositories so that we can use more
-than one. Pachyderm will combine each datum in one repo with all thos in
-another so that we will have all beaches available for each segment
+than one. Pachyderm will combine each datum in one repo with all those
+in another so that we will have all beaches available for each segment
 datum. We will create a new repo called `beaches` and bring the
 `playas.rds` file there.
 
@@ -101,7 +101,7 @@ datum. We will create a new repo called `beaches` and bring the
     get file separate_shape@master:/shapes_segmentos/playas/playas.rds -o playas.rds
     put file playas@master -f playas.rds
 
-On your filesystem you can now remove the file we downloaded from the
+On your file system you can now remove the file we downloaded from the
 cluster
 
     rm playas.rds
@@ -113,7 +113,7 @@ cluster
     create pipeline -f pipeline_distances.json
 
 We can check how the execution of the pipeline went by taking a look on
-the dashboads or inspect the job. We get the job id with `list job` and
+the dashboards or inspect the job. We get the job id with `list job` and
 then `inspect job <job_id>`.
 
 1.  And now we run the last pipeline that joins all the archives into
@@ -134,9 +134,11 @@ then `inspect job <job_id>`.
 1.  **NOTE:** We suggest your remove any access you may have given to
     the pachyderm hub services account to any buckets you have used.
 
-## Some usefule steps
+## What is something goes wrong
 
-What we really want to see is if any of the datums failed. We can ask
-for a list of datums
+What if something goes wrong? Can we see is if any of the datums failed?
+Yes, we can ask for a list of datums and check their status. If you do
+this on a command line you can `grep` (search) through the list to
+narrow it down.
 
     list datum <pipeline id>
